@@ -205,5 +205,78 @@ DELIMITER ;
 ;
 
 # 14
-CALL usp_withdraw_money2(1, 10);
-SELECT * FROM accounts
+
+DELIMITER $$
+CREATE PROCEDURE usp_transfer_money(from_account_id INT, to_account_id INT, amount DECIMAL(19, 4))
+BEGIN
+
+	IF (SELECT balance FROM accounts WHERE from_account_id = id) >= amount
+		AND amount > 0
+		AND (SELECT id FROM accounts WHERE from_account_id = id) IS NOT NULL
+        AND (SELECT id FROM accounts WHERE to_account_id = id) IS NOT NULL
+	THEN START TRANSACTION;
+    
+		UPDATE accounts
+		SET balance = balance - amount
+		WHERE id = from_account_id;
+		
+		UPDATE accounts
+		SET balance = balance + amount
+		WHERE id = to_account_id;
+        
+		COMMIT;
+    ELSE
+		ROLLBACK;
+	END IF;
+
+END$$
+DELIMITER ;
+;
+
+# 15
+CREATE TABLE logs (
+log_id INT PRIMARY KEY AUTO_INCREMENT,
+account_id INT,
+old_sum DECIMAL(19,4),
+new_sum DECIMAL(19,4)
+);
+
+DELIMITER $$
+CREATE TRIGGER trigger_balance_update
+AFTER UPDATE
+ON accounts
+FOR EACH ROW
+BEGIN
+	IF OLD.balance <> NEW.balance
+		THEN
+			INSERT INTO logs (account_id, old_sum, new_sum)
+            VALUES (OLd.id, OLD.balance, NEW.balance);
+	END IF;
+END$$
+
+DELIMITER ;
+;
+
+# 16
+CREATE TABLE notification_email (
+id INT PRIMARY KEY AUTO_INCREMENT,
+recepient INT,
+subject VARCHAR(255),
+body TEXT
+);
+
+DELIMITER $$
+CREATE TRIGGER tr_notification_email
+AFTER INSERT
+ON logs
+FOR EACH ROW
+BEGIN
+	INSERT INTO notification_email (recepient, subject, body)
+    VALUES (NEW.account_id,
+			CONCAT('Balance change for account: ', NEW.account_id),
+            CONCAT_WS(' ', 'On', DATE_FORMAT(NOW(), '%b %d %y at %r'),
+            'your balance was changed from', NEW.old_sum, 'to', NEW.new_sum)
+    );
+END$$
+DELIMITER ;
+;
