@@ -3,7 +3,7 @@ package stacksAndQueues;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
-public class E08_BrowserHistoryUpdate {
+public class L08_BrowserHistoryUpdate {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 

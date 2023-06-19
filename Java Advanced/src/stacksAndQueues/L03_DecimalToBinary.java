@@ -3,7 +3,7 @@ package stacksAndQueues;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
-public class E03_DecimalToBinary {
+public class L03_DecimalToBinary {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 

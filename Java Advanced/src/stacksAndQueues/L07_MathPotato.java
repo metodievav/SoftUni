@@ -3,7 +3,7 @@ package stacksAndQueues;
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
-public class E07_MathPotato {
+public class L07_MathPotato {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
