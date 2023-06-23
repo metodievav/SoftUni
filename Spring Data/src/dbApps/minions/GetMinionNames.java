@@ -36,13 +36,14 @@ public class GetMinionNames {
 
         ResultSet minionsResultSet = minionsInfoStatement.executeQuery();
 
-        while (minionsResultSet.next()) {
-            System.out.printf("Villain: %s%n", villainsResultSet.getString(1));
-
-        }
+        System.out.printf("Villain: %s%n", villainsResultSet.getString(1));
 
         for (int i = 1; minionsResultSet.next(); i++) {
-            System.out.println("i.");
+            String minionName = minionsResultSet.getString("name");
+            int minionAge = minionsResultSet.getInt("age");
+
+            System.out.printf("%d. %s %d%n", i, minionName, minionAge);
+
         }
 
     }
